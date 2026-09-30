@@ -1,4 +1,4 @@
-# 🎟️ EventFlow — Modern Event Registration & Management System
+# 🎟️ Sangam — Modern Event Registration & Management System
 
 [![Django](https://img.shields.io/badge/Django-6.1-0C4B33?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Django REST Framework](https://img.shields.io/badge/DRF-3.18-red?style=flat&logo=django&logoColor=white)](https://www.django-rest-framework.org/)
@@ -7,9 +7,9 @@
 [![Frontend](https://img.shields.io/badge/Frontend-Vanilla%20JS%20%26%20CSS3-yellow?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Status](https://img.shields.io/badge/Status-Production--Ready-success?style=flat)]()
 
-**EventFlow** is a full-stack, enterprise-grade event registration and discovery platform built with **Django**, **Django REST Framework (DRF)**, **SimpleJWT**, and a clean, humanized light-themed frontend.
+**Sangam** is a full-stack, enterprise-grade event registration and discovery platform built with **Django**, **Django REST Framework (DRF)**, **SimpleJWT**, and a clean, humanized light-themed frontend.
 
-Designed with concurrency-safe database transactions, EventFlow guarantees zero overbooking, seamless waitlist promotions, organizer permissions, and an intuitive user experience for both attendees and event managers.
+Designed with concurrency-safe database transactions, Sangam guarantees zero overbooking, seamless waitlist promotions, organizer permissions, and an intuitive user experience for both attendees and event managers.
 
 ---
 

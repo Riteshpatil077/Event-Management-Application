@@ -14,7 +14,7 @@
     toastTimer: null,
     mobileOpen: false,
   };
-  const TOKEN_KEY = "eventflow.session.v1";
+  const TOKEN_KEY = "sangam.session.v1";
   const dialogs = {
     auth:    $("#auth-dialog"),
     event:   $("#event-dialog"),
@@ -415,7 +415,7 @@
     $("#auth-title").textContent      = signup ? "Create Account" : "Welcome Back";
     $("#auth-intro").textContent      = signup
       ? "Sign up to book events and track your tickets."
-      : "Sign in to your EventFlow account.";
+      : "Sign in to your Sangam account.";
     $("#username-field").hidden       = !signup;
     $("#email-field").hidden          = !signup;
     $("#login-username-field").hidden = signup;
@@ -429,7 +429,7 @@
     $("#auth-error").textContent      = "";
 
     const switchEl = $("#auth-switch");
-    switchEl.innerHTML = signup ? "Already have an account? " : "New to EventFlow? ";
+    switchEl.innerHTML = signup ? "Already have an account? " : "New to Sangam? ";
     const switchBtn = document.createElement("button");
     switchBtn.type = "button";
     switchBtn.textContent = signup ? "Log in" : "Create an account";
@@ -467,7 +467,7 @@
       closeDialog(dialogs.auth);
       $("#auth-form").reset();
       showToast(
-        signup ? `Welcome to EventFlow, ${state.user.username}! 🎉` : `Welcome back, ${state.user.username}!`,
+        signup ? `Welcome to Sangam, ${state.user.username}! 🎉` : `Welcome back, ${state.user.username}!`,
         "success"
       );
       await loadEvents();
