@@ -1,0 +1,363 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f0c1a" />
+    <meta name="description" content="Discover, create, and register for events in your city. EventFlow — where great moments are made." />
+    <link rel="icon" href="{% static 'events/favicon.svg' %}" type="image/svg+xml" />
+    <title>EventFlow — Discover Events Worth Attending</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'events/app.css' %}?v=11" />
+    <script src="{% static 'events/app.js' %}?v=11" defer></script>
+  </head>
+  <body>
+
+    <!-- ── TOP BAR ── -->
+    <header class="topbar" role="banner">
+      <a class="brand" href="/" aria-label="EventFlow home">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 7v11h14V7L10 2z" fill="url(#bg)" /><path d="M7 13h6M7 10h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><defs><linearGradient id="bg" x1="3" y1="2" x2="17" y2="18" gradientUnits="userSpaceOnUse"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#6366f1"/></defs></svg>
+        </div>
+        <span class="brand-name">EventFlow</span>
+      </a>
+
+      <nav class="nav-actions" aria-label="Main navigation">
+        <a class="nav-link" href="#discover">Discover</a>
+        <button class="nav-link" id="tickets-link" type="button">My Tickets</button>
+        <button class="btn btn-ghost" id="auth-open" type="button">Log in</button>
+        <button class="btn btn-primary" id="create-open" type="button" hidden>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Create Event
+        </button>
+        <button class="avatar-btn" id="user-menu" type="button" hidden aria-label="Account menu"></button>
+      </nav>
+
+      <button class="mobile-menu-btn" id="mobile-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
+
+    <!-- ── MOBILE DRAWER ── -->
+    <div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+      <a class="nav-link" href="#discover">Discover</a>
+      <button class="nav-link" id="tickets-link-mobile" type="button">My Tickets</button>
+      <button class="btn btn-ghost" id="auth-open-mobile" type="button">Log in</button>
+      <button class="btn btn-primary" id="create-open-mobile" type="button" hidden>+ Create Event</button>
+    </div>
+
+    <main>
+
+      <!-- ── HERO ── -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-bg" aria-hidden="true">
+          <div class="hero-orb orb-1"></div>
+          <div class="hero-orb orb-2"></div>
+          <div class="hero-orb orb-3"></div>
+          <div class="hero-grid"></div>
+        </div>
+
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <div class="hero-badge">
+              <span class="pulse-dot" aria-hidden="true"></span>
+              Live events happening now
+            </div>
+            <h1 id="hero-title">
+              Find Events<br />
+              <span class="hero-gradient-text">That Move You</span>
+            </h1>
+            <p class="hero-sub">Discover conferences, concerts, workshops &amp; meetups. Book your spot in seconds — no friction, just great experiences.</p>
+            <div class="hero-actions">
+              <a href="#discover" class="btn btn-primary btn-lg">
+                Explore Events
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <button class="btn btn-outline btn-lg" id="hero-host-btn" type="button">Host an Event</button>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="hero-card-float card-float-1">
+              <div class="hc-badge">🎵 Music</div>
+              <div class="hc-date">OCT 15</div>
+              <div class="hc-title">Indie Night Live</div>
+              <div class="hc-meta">📍 Rooftop Stage · 120 spots left</div>
+              <div class="hc-bar"><div class="hc-bar-fill" style="width:65%"></div></div>
+            </div>
+            <div class="hero-card-float card-float-2">
+              <div class="hc-badge">💻 Tech</div>
+              <div class="hc-date">OCT 22</div>
+              <div class="hc-title">AI Summit 2026</div>
+              <div class="hc-meta">📍 Tech Hub · 48 spots left</div>
+              <div class="hc-bar"><div class="hc-bar-fill" style="width:82%"></div></div>
+            </div>
+            <div class="hero-card-float card-float-3">
+              <div class="hc-badge">🎨 Art</div>
+              <div class="hc-date">NOV 3</div>
+              <div class="hc-title">Gallery Opening</div>
+              <div class="hc-meta">📍 Downtown · Waitlist</div>
+              <div class="hc-bar full"><div class="hc-bar-fill" style="width:100%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-stats" aria-label="Platform statistics">
+          <div class="stat-item">
+            <span class="stat-num" id="stat-events">—</span>
+            <span class="stat-label">Upcoming Events</span>
+          </div>
+          <div class="stat-divider" aria-hidden="true"></div>
+          <div class="stat-item">
+            <span class="stat-num">2.4k+</span>
+            <span class="stat-label">Happy Attendees</span>
+          </div>
+          <div class="stat-divider" aria-hidden="true"></div>
+          <div class="stat-item">
+            <span class="stat-num">50+</span>
+            <span class="stat-label">Cities Covered</span>
+          </div>
+          <div class="stat-divider" aria-hidden="true"></div>
+          <div class="stat-item">
+            <span class="stat-num">98%</span>
+            <span class="stat-label">Satisfaction Rate</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── DISCOVER ── -->
+      <section class="discover" id="discover" aria-labelledby="discover-title">
+        <div class="section-inner">
+          <div class="section-header">
+            <div>
+              <div class="eyebrow">Browse Events</div>
+              <h2 id="discover-title">What's On Near You</h2>
+            </div>
+            <p>Find something worth your time.<br />Filter, search, and register in one click.</p>
+          </div>
+
+          <!-- Category chips -->
+          <div class="category-chips" role="list" aria-label="Event categories">
+            <button class="chip chip-active" data-category="" role="listitem" type="button">All Events</button>
+            <button class="chip" data-category="music" role="listitem" type="button">🎵 Music</button>
+            <button class="chip" data-category="tech" role="listitem" type="button">💻 Tech</button>
+            <button class="chip" data-category="art" role="listitem" type="button">🎨 Art</button>
+            <button class="chip" data-category="food" role="listitem" type="button">🍔 Food</button>
+            <button class="chip" data-category="sports" role="listitem" type="button">⚽ Sports</button>
+            <button class="chip" data-category="wellness" role="listitem" type="button">🧘 Wellness</button>
+          </div>
+
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <label class="search-wrap" for="search">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <input id="search" type="search" placeholder="Search events, venues, cities…" autocomplete="off" aria-label="Search events" />
+            </label>
+            <div class="toolbar-right">
+              <span id="event-count" class="event-count" aria-live="polite"></span>
+              <button class="icon-btn" id="refresh-events" type="button" aria-label="Refresh events" title="Refresh">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M13 7.5A5.5 5.5 0 112.5 4M2 1.5V4.5h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="notice" class="notice" role="status" hidden></div>
+
+          <!-- Grid -->
+          <div id="events-grid" class="events-grid" aria-live="polite" aria-label="Events list"></div>
+
+          <!-- Load more -->
+          <div class="load-more-wrap">
+            <button id="load-more" class="btn btn-outline" type="button" hidden>
+              Load more events
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+
+          <!-- Empty state -->
+          <div id="empty-state" class="empty-state" hidden>
+            <div class="empty-illustration" aria-hidden="true">
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="#1e1b3a" stroke="#3730a3" stroke-width="1.5"/><path d="M30 40h20M40 30v20" stroke="#6366f1" stroke-width="2" stroke-linecap="round" opacity=".4"/><circle cx="40" cy="40" r="12" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3 3"/></svg>
+            </div>
+            <h3>No events found</h3>
+            <p>Try a different search or check back soon — new events are added daily.</p>
+            <button class="btn btn-primary" id="empty-create-btn" type="button">Host your own event</button>
+          </div>
+
+          <!-- Loading state -->
+          <div id="loading-state" class="loading-state">
+            <div class="loader" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <span>Finding great events…</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── HOST CTA STRIP ── -->
+      <section class="host-strip" aria-labelledby="host-title">
+        <div class="host-strip-inner">
+          <div class="host-strip-icon" aria-hidden="true">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 4L4 12v16h24V12L16 4z" fill="url(#hg)"/><path d="M12 22h8M12 17h6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><defs><linearGradient id="hg" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#6366f1"/></defs></svg>
+          </div>
+          <div class="host-strip-copy">
+            <div class="eyebrow" style="color:#a78bfa">Got Something in Mind?</div>
+            <h2 id="host-title">Bring Your People Together</h2>
+            <p>It takes 2 minutes to create an event. Add details, set capacity, publish live.</p>
+          </div>
+          <button id="organizer-cta" type="button" class="btn btn-primary btn-lg host-cta">
+            Start Hosting
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── FOOTER ── -->
+    <footer class="footer" role="contentinfo">
+      <div class="footer-inner">
+        <a class="brand" href="/" aria-label="EventFlow home">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 7v11h14V7L10 2z" fill="url(#fbg)" /><path d="M7 13h6M7 10h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><defs><linearGradient id="fbg" x1="3" y1="2" x2="17" y2="18" gradientUnits="userSpaceOnUse"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#6366f1"/></defs></svg>
+          </div>
+          <span class="brand-name">EventFlow</span>
+        </a>
+        <span class="footer-tagline">Where great moments are made.</span>
+        <span class="footer-note">EventFlow &copy; 2026</span>
+      </div>
+    </footer>
+
+    <!-- ── AI SIGNATURE STRIP ── -->
+    <div class="ai-strip" role="complementary" aria-label="Built by AI">
+      <div class="ai-strip-inner">
+        <span class="ai-dot" aria-hidden="true"></span>
+        <span>Designed &amp; built with <b>AI assistance</b> &mdash; EventFlow UI crafted by Antigravity&nbsp;✦</span>
+      </div>
+    </div>
+
+    <!-- ── AUTH DIALOG ── -->
+    <dialog id="auth-dialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <form class="dialog-close-form">
+        <button type="button" class="dialog-close" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </form>
+      <div class="dialog-content">
+        <div class="dialog-icon auth-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="url(#aig)" stroke-width="1.8"/><path d="M3 20c0-4 3.6-7 8-7s8 3 8 7" stroke="url(#aig)" stroke-width="1.8" stroke-linecap="round"/><defs><linearGradient id="aig" x1="3" y1="3" x2="19" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#6366f1"/></defs></svg>
+        </div>
+        <span class="eyebrow" style="margin-bottom:4px">Your Account</span>
+        <h2 id="auth-title">Welcome Back</h2>
+        <p id="auth-intro" class="dialog-intro">Sign in to your account to book events.</p>
+        <form id="auth-form" class="form-stack" novalidate>
+          <label id="username-field" hidden>
+            <span>Username</span>
+            <input id="username" name="username" autocomplete="username" placeholder="Choose a username" />
+          </label>
+          <label id="login-username-field">
+            <span>Username</span>
+            <input id="login-username" name="login-username" autocomplete="username" required placeholder="Your username" />
+          </label>
+          <label id="email-field" hidden>
+            <span>Email Address</span>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" />
+          </label>
+          <label>
+            <span>Password</span>
+            <div class="input-wrap">
+              <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required placeholder="••••••••" />
+              <button type="button" class="toggle-pass" aria-label="Toggle password visibility" tabindex="-1">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><ellipse cx="8" cy="8" rx="7" ry="4.5" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>
+              </button>
+            </div>
+          </label>
+          <div id="auth-error" class="form-error" role="alert" hidden></div>
+          <button class="btn btn-primary btn-full" id="auth-submit" type="submit">Log in</button>
+        </form>
+        <p class="switch-auth">
+          <span id="auth-switch">New around here? </span>
+        </p>
+      </div>
+    </dialog>
+
+    <!-- ── CREATE EVENT DIALOG ── -->
+    <dialog id="event-dialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="event-dialog-title">
+      <form class="dialog-close-form">
+        <button type="button" class="dialog-close" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </form>
+      <div class="dialog-content">
+        <div class="dialog-icon event-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="5" width="16" height="14" rx="2" stroke="url(#eig)" stroke-width="1.8"/><path d="M7 3v4M15 3v4M3 10h16" stroke="url(#eig)" stroke-width="1.8" stroke-linecap="round"/><defs><linearGradient id="eig" x1="3" y1="3" x2="19" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#f59e0b"/><stop offset="1" stop-color="#ef4444"/></defs></svg>
+        </div>
+        <span class="eyebrow" style="margin-bottom:4px">Host an Event</span>
+        <h2 id="event-dialog-title">Create an Event</h2>
+        <p class="dialog-intro">Fill in the details below. You can edit everything after publishing.</p>
+        <form id="event-form" class="form-stack" novalidate>
+          <label>
+            <span>Event Name <span class="req" aria-hidden="true">*</span></span>
+            <input name="title" maxlength="200" required placeholder="A name people will remember" />
+          </label>
+          <label>
+            <span>Description <span class="req" aria-hidden="true">*</span></span>
+            <textarea name="description" rows="3" required placeholder="What's happening? Set the scene…"></textarea>
+          </label>
+          <div class="form-row">
+            <label>
+              <span>Venue / Location <span class="req" aria-hidden="true">*</span></span>
+              <input name="location" maxlength="255" required placeholder="Address or venue name" />
+            </label>
+            <label>
+              <span>Date &amp; Time <span class="req" aria-hidden="true">*</span></span>
+              <input name="event_date" type="datetime-local" required />
+            </label>
+          </div>
+          <label>
+            <span>Capacity (seats) <span class="req" aria-hidden="true">*</span></span>
+            <input name="capacity" type="number" min="1" required value="30" placeholder="e.g. 50" />
+          </label>
+          <div id="event-error" class="form-error" role="alert" hidden></div>
+          <button class="btn btn-primary btn-full" type="submit">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Publish Event
+          </button>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- ── MY TICKETS DIALOG ── -->
+    <dialog id="tickets-dialog" class="dialog dialog-wide" role="dialog" aria-modal="true" aria-labelledby="tickets-dialog-title">
+      <form class="dialog-close-form">
+        <button type="button" class="dialog-close" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </form>
+      <div class="dialog-content">
+        <div class="dialog-icon tickets-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9a2 2 0 010-4h16a2 2 0 010 4v4a2 2 0 010 4H3a2 2 0 010-4V9z" stroke="url(#tig)" stroke-width="1.8"/><path d="M14 5v12" stroke="url(#tig)" stroke-width="1.4" stroke-dasharray="2 2"/><defs><linearGradient id="tig" x1="3" y1="3" x2="19" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#34d399"/><stop offset="1" stop-color="#059669"/></defs></svg>
+        </div>
+        <span class="eyebrow" style="margin-bottom:4px">My Bookings</span>
+        <h2 id="tickets-dialog-title">My Tickets</h2>
+        <p class="dialog-intro">All your registered events in one place.</p>
+        <div id="tickets-list" class="tickets-list"></div>
+        <div id="tickets-empty" class="empty-state compact" hidden>
+          <div class="empty-illustration" aria-hidden="true">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="28" fill="#1e1b3a" stroke="#3730a3" stroke-width="1.2"/><path d="M18 30a2 2 0 010-4h24a2 2 0 010 4v4a2 2 0 010 4H18a2 2 0 010-4V30z" stroke="#6366f1" stroke-width="1.4" opacity=".5"/></svg>
+          </div>
+          <h3>No tickets yet</h3>
+          <p>Browse events and save your spot.</p>
+          <button class="btn btn-primary" id="tickets-discover" type="button">Explore Events</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- ── TOAST ── -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  </body>
+</html>
