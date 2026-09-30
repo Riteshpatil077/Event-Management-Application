@@ -306,43 +306,186 @@ python manage.py check
 
 ---
 
-## 🌐 Production Deployment on Render
+## ☁️ Deploying on AWS (Free Tier — EC2)
 
-This project is configured for seamless deployment to **[Render](https://render.com/)** using the included `build.sh` script, `render.yaml` blueprint, WhiteNoise static file server, and Gunicorn WSGI.
+You can host **Sangam** for **100% free** for 12 months using the **AWS Free Tier** (750 hours/month of `t2.micro` or `t3.micro` EC2 instance).
 
-### Option A: 1-Click Blueprint (Recommended)
-1. Push your repository to GitHub.
-2. Sign in to your [Render Dashboard](https://dashboard.render.com/).
-3. Click **New +** > **Blueprint**.
-4. Connect the `Sangam-Event-Management-Application` repository.
-5. Render will automatically detect `render.yaml` and configure:
-   - Python Web Service (`gunicorn config.wsgi:application`)
-   - Managed PostgreSQL database
-   - Automatic migrations & static collection via `build.sh`
-6. Click **Apply** to deploy!
+---
 
-### Option B: Manual Web Service Setup
-If creating the services manually:
-1. **Create PostgreSQL Database**:
-   - In Render, click **New +** > **PostgreSQL**.
-   - Copy the **Internal Database URL**.
-2. **Create Web Service**:
-   - Click **New +** > **Web Service** and link your GitHub repo.
-   - **Environment**: `Python 3`
-   - **Build Command**: `./build.sh`
-   - **Start Command**: `gunicorn config.wsgi:application`
-3. **Environment Variables**:
-   | Variable | Value |
-   |---|---|
-   | `PYTHON_VERSION` | `3.12.0` |
-   | `DJANGO_DEBUG` | `false` |
-   | `DJANGO_SECRET_KEY` | *(Click generate or paste random 50+ char secret)* |
-   | `DJANGO_ALLOWED_HOSTS` | `.onrender.com,localhost,127.0.0.1` |
-   | `DATABASE_URL` | *(Paste Internal Database URL from step 1)* |
-4. **Create Superuser on Render**:
-   - Once deployed, open your web service page in Render.
-   - Click the **Shell** tab on the left.
-   - Run: `python manage.py createsuperuser` and set your admin credentials.
+### Step 1: Launch an AWS EC2 Instance
+1. Log in to the [AWS Management Console](https://aws.amazon.com/console/) and navigate to **EC2**.
+2. Click **Launch Instance**:
+   - **Name**: `sangam-event-platform`
+   - **AMI**: Ubuntu Server 24.04 LTS *(Free Tier Eligible)*
+   - **Instance Type**: `t2.micro` (or `t3.micro`) *(Free Tier Eligible)*
+   - **Key pair**: Create a new key pair (e.g. `sangam-key.pem`) and download it.
+3. In **Network Settings**, check all three:
+   - ✅ **Allow SSH traffic from** Anywhere (or My IP)
+   - ✅ **Allow HTTP traffic from the internet** (Port 80)
+   - ✅ **Allow HTTPS traffic from the internet** (Port 443)
+4. Click **Launch Instance**.
+5. Note your EC2 instance's **Public IPv4 address** (e.g. `13.233.100.50`).
+
+---
+
+### Step 2: Connect via SSH
+Open your terminal (PowerShell or Bash) on your local computer:
+
+```bash
+chmod 400 sangam-key.pem   # Linux/macOS only
+ssh -i sangam-key.pem ubuntu@<YOUR-EC2-PUBLIC-IP>
+```
+
+---
+
+### Step 3: Install System Packages
+On your EC2 terminal:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y python3-pip python3-venv git nginx
+```
+
+---
+
+### Step 4: Clone the Repo & Set Up Python
+```bash
+git clone https://github.com/Riteshpatil077/Sangam-Event-Management-Application.git
+cd Sangam-Event-Management-Application
+
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+---
+
+### Step 5: Configure Environment Variables
+```bash
+cp .env.example .env
+nano .env
+```
+Edit the values (press `Ctrl+O`, `Enter`, then `Ctrl+X` to save in nano):
+```ini
+DJANGO_SECRET_KEY=change-this-to-a-secure-random-key-64-chars
+DJANGO_DEBUG=false
+DJANGO_ALLOWED_HOSTS=<YOUR-EC2-PUBLIC-IP>,localhost,127.0.0.1
+DJANGO_CSRF_TRUSTED_ORIGINS=http://<YOUR-EC2-PUBLIC-IP>
+```
+
+---
+
+### Step 6: Database Migration & Static Files
+```bash
+python manage.py migrate
+python manage.py collectstatic --no-input
+python manage.py createsuperuser
+```
+
+---
+
+### Step 7: Create Gunicorn Systemd Service
+This ensures Gunicorn runs continuously in the background and restarts on reboot.
+
+Create the service file:
+```bash
+sudo nano /etc/systemd/system/gunicorn.service
+```
+
+Paste the following configuration:
+```ini
+[Unit]
+Description=Gunicorn daemon for Sangam Event Platform
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/Sangam-Event-Management-Application
+ExecStart=/home/ubuntu/Sangam-Event-Management-Application/venv/bin/gunicorn \
+          --workers 3 \
+          --bind 127.0.0.1:8000 \
+          config.wsgi:application
+
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and start the service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+sudo systemctl status gunicorn
+```
+
+---
+
+### Step 8: Configure Nginx as Reverse Proxy
+Nginx serves static files directly with high speed and passes web traffic to Gunicorn.
+
+Create the Nginx site configuration:
+```bash
+sudo nano /etc/nginx/sites-available/sangam
+```
+
+Paste:
+```nginx
+server {
+    listen 80;
+    server_name <YOUR-EC2-PUBLIC-IP>;
+
+    client_max_body_size 20M;
+
+    location = /favicon.ico { 
+        access_log off; 
+        log_not_found off; 
+    }
+
+    # Serve static assets directly from staticfiles
+    location /static/ {
+        alias /home/ubuntu/Sangam-Event-Management-Application/staticfiles/;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000";
+    }
+
+    # Proxy all other requests to Gunicorn
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Enable the site and restart Nginx:
+```bash
+sudo ln -s /etc/nginx/sites-available/sangam /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+---
+
+### Step 9: Access Your Live Application!
+Open your browser and navigate to:
+```
+http://<YOUR-EC2-PUBLIC-IP>/
+```
+Your **Sangam** platform is now live on AWS Free Tier!
+
+*(Optional)* If you connect a custom domain (e.g. `events.yourdomain.com`), get a free SSL certificate with Certbot:
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d events.yourdomain.com
+```
 
 ---
 
