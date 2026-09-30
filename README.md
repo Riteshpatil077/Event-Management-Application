@@ -306,20 +306,43 @@ python manage.py check
 
 ---
 
-## 🌐 Production Deployment Checklist
+## 🌐 Production Deployment on Render
 
-1. **Security**:
-   - Set a strong, private `DJANGO_SECRET_KEY` in production.
-   - Turn off debug mode: `DJANGO_DEBUG=False`.
-   - Restrict `DJANGO_ALLOWED_HOSTS` to your production domain(s) or IP addresses.
-2. **Database**:
-   - Switch from SQLite to managed PostgreSQL.
-   - Configure connection pooling and SSL settings.
-3. **Static Assets**:
-   - Execute `python manage.py collectstatic` to bundle static assets.
-   - Serve `/static/` via Nginx, WhiteNoise, or a CDN (Cloudflare/AWS S3).
-4. **WSGI / ASGI Server**:
-   - Deploy using **Gunicorn**, **Uvicorn**, or **Daphne** behind an Nginx reverse proxy.
+This project is configured for seamless deployment to **[Render](https://render.com/)** using the included `build.sh` script, `render.yaml` blueprint, WhiteNoise static file server, and Gunicorn WSGI.
+
+### Option A: 1-Click Blueprint (Recommended)
+1. Push your repository to GitHub.
+2. Sign in to your [Render Dashboard](https://dashboard.render.com/).
+3. Click **New +** > **Blueprint**.
+4. Connect the `Sangam-Event-Management-Application` repository.
+5. Render will automatically detect `render.yaml` and configure:
+   - Python Web Service (`gunicorn config.wsgi:application`)
+   - Managed PostgreSQL database
+   - Automatic migrations & static collection via `build.sh`
+6. Click **Apply** to deploy!
+
+### Option B: Manual Web Service Setup
+If creating the services manually:
+1. **Create PostgreSQL Database**:
+   - In Render, click **New +** > **PostgreSQL**.
+   - Copy the **Internal Database URL**.
+2. **Create Web Service**:
+   - Click **New +** > **Web Service** and link your GitHub repo.
+   - **Environment**: `Python 3`
+   - **Build Command**: `./build.sh`
+   - **Start Command**: `gunicorn config.wsgi:application`
+3. **Environment Variables**:
+   | Variable | Value |
+   |---|---|
+   | `PYTHON_VERSION` | `3.12.0` |
+   | `DJANGO_DEBUG` | `false` |
+   | `DJANGO_SECRET_KEY` | *(Click generate or paste random 50+ char secret)* |
+   | `DJANGO_ALLOWED_HOSTS` | `.onrender.com,localhost,127.0.0.1` |
+   | `DATABASE_URL` | *(Paste Internal Database URL from step 1)* |
+4. **Create Superuser on Render**:
+   - Once deployed, open your web service page in Render.
+   - Click the **Shell** tab on the left.
+   - Run: `python manage.py createsuperuser` and set your admin credentials.
 
 ---
 
